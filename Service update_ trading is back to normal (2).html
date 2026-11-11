@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Service update: trading is back to normal</title>
+<style>
+  :root {
+    --indigo-deep: #2D2675;
+    --indigo: #4A3FB8;
+    --ink: #1C1B2E;
+    --muted: #6B6F85;
+    --line: #E8E8F1;
+    --surface: #FFFFFF;
+    --soft: #F4F4F9;
+    --tint: #EEEDFA;
+    --accent-text: #2D2675;
+    --good: #1F9D6A;
+    color-scheme: light;
+    box-sizing: border-box;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ink: #ECECF6; --muted: #A4A7BC; --line: #2A2A40; --surface: #12121E;
+      --soft: #1B1B2B; --tint: #23224A; --accent-text: #B9B2FF; --good: #4FD39B;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --ink: #ECECF6; --muted: #A4A7BC; --line: #2A2A40; --surface: #12121E;
+    --soft: #1B1B2B; --tint: #23224A; --accent-text: #B9B2FF; --good: #4FD39B;
+    color-scheme: dark;
+  }
+  html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+  *, *::before, *::after { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--surface);
+    color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC", "Segoe UI", Inter, Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 640px; margin: 0 auto; padding: 20px 20px 40px; }
+
+  /* Hero mirrors the app's balance card */
+  .hero {
+    background: linear-gradient(120deg, var(--indigo-deep) 0%, var(--indigo) 100%);
+    color: #fff;
+    border-radius: 20px;
+    padding: 26px 22px 22px;
+    box-shadow: 0 14px 30px -14px rgba(45, 38, 117, .55);
+  }
+  .hero .date { font-size: 13px; opacity: .78; margin: 0 0 10px; }
+  .hero h1 { font-size: 26px; line-height: 1.22; margin: 0 0 12px; font-weight: 700; letter-spacing: -.01em; }
+  .hero p { margin: 0 0 18px; font-size: 15px; opacity: .9; }
+  .status { list-style: none; margin: 0; padding: 4px 16px; background: #fff; border-radius: 14px; color: #1C1B2E; }
+  .status li { display: flex; gap: 12px; align-items: flex-start; padding: 12px 0; font-size: 15px; line-height: 1.4; font-weight: 500; }
+  .status li + li { border-top: 1px solid #ECECF4; }
+  .status svg { flex: none; margin-top: 1px; }
+
+  article { margin-top: 30px; }
+  section { padding: 22px 0; border-top: 1px solid var(--line); }
+  section:first-of-type { border-top: 0; padding-top: 0; }
+  h2 { font-size: 19px; line-height: 1.3; margin: 0 0 10px; font-weight: 700; }
+  p { margin: 0 0 12px; }
+  p:last-child { margin-bottom: 0; }
+  .muted { color: var(--muted); }
+
+  .callout { background: var(--tint); border-radius: 14px; padding: 16px; margin-top: 16px; }
+  .callout p { font-size: 15px; }
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    min-height: 48px; padding: 0 22px; border-radius: 999px; border: 0;
+    font: inherit; font-weight: 600; font-size: 15px; cursor: pointer;
+  }
+  .btn-primary { background: linear-gradient(120deg, var(--indigo-deep), var(--indigo)); color: #fff; width: 100%; margin-top: 14px; }
+  .btn:focus-visible, .choice:focus-visible, .chip:focus-visible { outline: 3px solid var(--indigo); outline-offset: 2px; }
+
+  .plan { list-style: none; padding: 0; margin: 4px 0 0; }
+  .plan li { position: relative; padding: 8px 0 8px 28px; }
+  .plan li::before {
+    content: ""; position: absolute; left: 4px; top: 17px; width: 10px; height: 10px;
+    border-radius: 3px; background: var(--indigo); transform: rotate(45deg);
+  }
+
+  .signoff { font-weight: 600; margin-top: 16px; }
+
+  /* Feedback */
+  .feedback { margin-top: 10px; background: var(--soft); border-radius: 18px; padding: 22px 18px; text-align: center; }
+  .feedback h2 { font-size: 17px; margin-bottom: 14px; }
+  .choices { display: flex; gap: 12px; justify-content: center; }
+  .choice {
+    flex: 1; max-width: 160px; min-height: 52px; border-radius: 999px;
+    border: 1.5px solid var(--line); background: var(--surface); color: var(--ink);
+    font: inherit; font-weight: 600; font-size: 15px; cursor: pointer;
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    transition: border-color .15s, background .15s;
+  }
+  .choice[aria-pressed="true"] { border-color: var(--indigo); background: var(--tint); color: var(--accent-text); }
+  .followup { margin-top: 18px; text-align: left; }
+  .followup[hidden], .thanks[hidden] { display: none; }
+  .followup p { font-size: 15px; font-weight: 600; margin-bottom: 10px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip {
+    border: 1.5px solid var(--line); background: var(--surface); color: var(--ink);
+    border-radius: 999px; padding: 8px 14px; font: inherit; font-size: 14px; cursor: pointer;
+  }
+  .chip[aria-pressed="true"] { border-color: var(--indigo); background: var(--tint); color: var(--accent-text); }
+  textarea {
+    width: 100%; margin-top: 12px; min-height: 84px; resize: vertical;
+    border: 1.5px solid var(--line); border-radius: 12px; padding: 12px;
+    font: inherit; font-size: 15px; background: var(--surface); color: var(--ink);
+  }
+  textarea:focus { outline: none; border-color: var(--indigo); }
+  .thanks { display: flex; flex-direction: column; align-items: center; gap: 8px; animation: pop .25s ease-out; }
+  .thanks strong { font-size: 16px; }
+  .thanks span { font-size: 14px; color: var(--muted); }
+  .link-btn { background: none; border: 0; color: var(--accent-text); font: inherit; font-size: 14px; font-weight: 600; cursor: pointer; padding: 6px; }
+  @keyframes pop { from { opacity: 0; transform: scale(.97); } to { opacity: 1; transform: none; } }
+  @media (prefers-reduced-motion: reduce) { .thanks { animation: none; } .choice { transition: none; } }
+</style>
+</head>
+<body>
+<main class="wrap">
+
+  <header class="hero">
+    <p class="date">Published 10 November 2026</p>
+    <h1>Trading is back to normal</h1>
+    <p>Here’s what happened over the past week, what it means for your orders, and what we’re doing about it.</p>
+    <ul class="status" aria-label="Current status">
+      <li>
+        <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="10" fill="#1F9D6A"/><path d="M6 10.3l2.6 2.6L14 7.5" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Gift card trades and payouts are running again
+      </li>
+      <li>
+        <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="10" fill="#1F9D6A"/><path d="M6 10.3l2.6 2.6L14 7.5" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        No impact on balances or personal data found so far
+      </li>
+      <li>
+        <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="10" fill="#1F9D6A"/><path d="M6 10.3l2.6 2.6L14 7.5" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Over 90% of reported order issues resolved
+      </li>
+    </ul>
+  </header>
+
+  <article>
+    <section>
+      <h2>What happened</h2>
+      <p>From 3 November, our systems were targeted by an external attack. The attackers exploited PHP2Shell, a serious, newly disclosed security flaw in PHP — the software that powers a large share of the world’s websites and apps. Platforms around the world were affected, and PHP’s maintainers and cybersecurity agencies in several countries issued urgent warnings.</p>
+      <p>For a period, parts of the app became unstable and some gift card trades were settled late. We know this made selling your cards harder than it should have been, and we’re sorry.</p>
+      <p>This happened on our platform, and we take full responsibility for it.</p>
+    </section>
+
+    <section>
+      <h2>Is my money and information safe?</h2>
+      <p>As soon as the attack was detected, our technical and security teams closed the vulnerability and ran a full review of our systems.</p>
+      <p>So far, the investigation has found no impact on user balances or personal information. We’re continuing to monitor and verify, and if anything changes, we’ll let you know straight away.</p>
+    </section>
+
+    <section>
+      <h2>Can I trade now?</h2>
+      <p>Yes. The platform’s main features are working normally again, including gift card trades and settlement. You can trade as usual.</p>
+    </section>
+
+    <section>
+      <h2>What about my delayed order?</h2>
+      <p>More than 90% of the reports we received have already been resolved. Affected orders are being verified and compensated according to our plan.</p>
+      <p>For any order that’s still outstanding, we’ll check it individually and contact you directly until it’s fully sorted. Getting the system back up doesn’t mean we stop looking out for you.</p>
+      <div class="callout">
+        <p><strong>Still having a problem with an order?</strong> Contact customer service in the app or send a message to our official account, and include your order number. These cases are being handled first.</p>
+        <button class="btn btn-primary" type="button" id="supportBtn">Contact customer service</button>
+      </div>
+    </section>
+
+    <section>
+      <h2>What we’re doing next</h2>
+      <p>This incident has reminded us that security and your trust can never be taken for granted. Going forward, we will:</p>
+      <ul class="plan">
+        <li>Keep strengthening our security and patch new vulnerabilities quickly</li>
+        <li>Monitor trading activity for risks in real time</li>
+        <li>Respond faster when an order looks unusual</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Thank you</h2>
+      <p>Thank you for your patience, understanding and support while we worked through this. As a thank-you, we’ll soon run an appreciation event for all users — keep an eye out for the official announcement.</p>
+      <p>We’ll keep earning your trust through what we do.</p>
+      <p class="signoff">The Jaragift Team</p>
+    </section>
+  </article>
+
+  <aside class="feedback" id="feedback" aria-live="polite">
+    <div id="askBlock">
+      <h2>Was this update helpful?</h2>
+      <div class="choices" role="group" aria-label="Was this update helpful?">
+        <button class="choice" type="button" data-vote="yes" aria-pressed="false">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 10v11H4a1 1 0 0 1-1-1v-9a1 1 0 0 1 1-1h3zm0 0l4-8a3 3 0 0 1 3 3v4h5.5a2 2 0 0 1 2 2.3l-1.4 8A2 2 0 0 1 18.1 21H7"/></svg>
+          Yes
+        </button>
+        <button class="choice" type="button" data-vote="no" aria-pressed="false">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 14V3h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1h-3zm0 0l-4 8a3 3 0 0 1-3-3v-4H4.5a2 2 0 0 1-2-2.3l1.4-8A2 2 0 0 1 5.9 3H17"/></svg>
+          No
+        </button>
+      </div>
+
+      <div class="followup" id="followup" hidden>
+        <p>What could we do better?</p>
+        <div class="chips" role="group" aria-label="Reasons">
+          <button class="chip" type="button" aria-pressed="false">My order is still affected</button>
+          <button class="chip" type="button" aria-pressed="false">I still have questions</button>
+          <button class="chip" type="button" aria-pressed="false">It’s hard to understand</button>
+          <button class="chip" type="button" aria-pressed="false">I’m worried about my account</button>
+        </div>
+        <label for="comment" style="position:absolute;left:-9999px">Anything else?</label>
+        <textarea id="comment" maxlength="500" placeholder="Anything else you’d like to tell us? (optional)"></textarea>
+        <button class="btn btn-primary" type="button" id="sendBtn">Send feedback</button>
+      </div>
+    </div>
+
+    <div class="thanks" id="thanks" hidden>
+      <svg width="40" height="40" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="10" fill="#1F9D6A"/><path d="M6 10.3l2.6 2.6L14 7.5" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <strong>Thanks for your feedback</strong>
+      <span id="thanksNote">It helps us keep you better informed.</span>
+      <button class="link-btn" type="button" id="changeBtn">Change my answer</button>
+    </div>
+  </aside>
+
+</main>
+
+<script>
+(function () {
+  var ANNOUNCEMENT_ID = "php2shell-service-update-2026-11";
+  var STORE_KEY = "feedback:" + ANNOUNCEMENT_ID;
+
+  // Sends an event to the native app (React Native WebView, iOS WKWebView or Android bridge).
+  // Developers: wire this to your analytics / feedback endpoint.
+  function sendToApp(payload) {
+    payload.announcementId = ANNOUNCEMENT_ID;
+    payload.timestamp = new Date().toISOString();
+    var msg = JSON.stringify(payload);
+    try {
+      if (window.ReactNativeWebView) window.ReactNativeWebView.postMessage(msg);
+      else if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.appBridge) window.webkit.messageHandlers.appBridge.postMessage(payload);
+      else if (window.AppBridge && window.AppBridge.postMessage) window.AppBridge.postMessage(msg);
+    } catch (e) {}
+    window.dispatchEvent(new CustomEvent("announcement-event", { detail: payload }));
+  }
+
+  var choices = document.querySelectorAll(".choice");
+  var chips = document.querySelectorAll(".chip");
+  var followup = document.getElementById("followup");
+  var askBlock = document.getElementById("askBlock");
+  var thanks = document.getElementById("thanks");
+  var thanksNote = document.getElementById("thanksNote");
+  var comment = document.getElementById("comment");
+
+  function save(v) { try { localStorage.setItem(STORE_KEY, v); } catch (e) {} }
+  function load() { try { return localStorage.getItem(STORE_KEY); } catch (e) { return null; } }
+
+  function showThanks(vote) {
+    thanksNote.textContent = vote === "yes"
+      ? "Glad it helped. You can trade as usual."
+      : "We’ll use this to make our updates clearer. If an order is still affected, please contact customer service.";
+    askBlock.hidden = true;
+    thanks.hidden = false;
+  }
+
+  choices.forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      var vote = btn.getAttribute("data-vote");
+      choices.forEach(function (b) { b.setAttribute("aria-pressed", String(b === btn)); });
+      if (vote === "yes") {
+        sendToApp({ type: "feedback", helpful: true });
+        save("yes");
+        showThanks("yes");
+      } else {
+        followup.hidden = false;
+      }
+    });
+  });
+
+  chips.forEach(function (chip) {
+    chip.addEventListener("click", function () {
+      chip.setAttribute("aria-pressed", String(chip.getAttribute("aria-pressed") !== "true"));
+    });
+  });
+
+  document.getElementById("sendBtn").addEventListener("click", function () {
+    var reasons = [];
+    chips.forEach(function (c) { if (c.getAttribute("aria-pressed") === "true") reasons.push(c.textContent.trim()); });
+    sendToApp({ type: "feedback", helpful: false, reasons: reasons, comment: comment.value.trim() });
+    save("no");
+    showThanks("no");
+  });
+
+  document.getElementById("changeBtn").addEventListener("click", function () {
+    thanks.hidden = true;
+    askBlock.hidden = false;
+    followup.hidden = true;
+    choices.forEach(function (b) { b.setAttribute("aria-pressed", "false"); });
+  });
+
+  // Contact customer service: asks the app to open support, then closes this page.
+  // In an in-app WebView, the native side must handle "close_webview" (window.close() alone
+  // is ignored by most WebViews). window.close() is kept as a fallback for browser tabs.
+  document.getElementById("supportBtn").addEventListener("click", function () {
+    sendToApp({ type: "open_customer_service" });
+    sendToApp({ type: "close_webview" });
+    setTimeout(function () {
+      try { window.close(); } catch (e) {}
+    }, 150);
+  });
+
+  var prior = load();
+  if (prior === "yes" || prior === "no") showThanks(prior);
+})();
+</script>
+</body>
+</html>
